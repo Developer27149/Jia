@@ -1,0 +1,37 @@
+{
+  "name": "JiaBackendApi",
+  "licence": "MIT",
+  "version": "1.0.0",
+  "author": "妙才",
+  "description": "甲的服务端接口",
+  "keywords": [
+    "koa",
+    "RESTful API",
+    "backend server"
+  ],
+  "private": false,
+  "scripts": {
+    "dev": "nodemon ./src/app.js",
+    "lint": "eslint ./src/**/*",
+    "test": "echo not found test codes",
+    "prod": "pm2 ./src/app.js"
+  },
+  "engines": {
+    "node": ">=16.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "prettier": "^2.4.1"
+  },
+  "dependencies": {
+    "@koa/cors": "^3.1.0",
+    "@koa/router": "^10.1.1",
+    "dotenv": "^10.0.0",
+    "koa": "^2.13.4",
+    "koa-bodyparser": "^4.3.0",
+    "koa-jwt": "^4.0.3",
+    "koa-static": "^5.0.0",
+    "koa.res.api": "^2.0.2"
+  }
+}
