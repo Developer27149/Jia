@@ -1,7 +1,11 @@
 const Router = require("@koa/router");
-const { getWallpaper } = require("./controllers/wallpaper.js");
+const {
+  syncWallpaper,
+  getWallpaperByPage,
+} = require("./controllers/wallpaper.js");
 
 const router = new Router();
-router.get("/", getWallpaper);
+router.get("/wallpaper/page/:page", getWallpaperByPage);
+router.get("/wallpaper/sync", syncWallpaper);
 
 module.exports = router;
