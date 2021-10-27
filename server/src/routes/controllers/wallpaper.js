@@ -39,21 +39,19 @@ const syncWallpaper = async (ctx) => {
         };
       }
     );
-
-    console.log(newData);
-
     let syncCount = 0;
     const taskArr = newData.map(async (item) => {
-      const result = await WallpaperModel.exists({
+      const isExist = await WallpaperModel.exists({
         id: item.id,
-      }).exec();
-      if (result === null) {
-        return WallpaperModel.create(item).exec();
+      });
+      if (!isExist) {
+        return WallpaperModel.create(item);
       }
     });
 
     const taskResult = await Promise.all(taskArr);
     taskResult.forEach((i) => {
+      console.log(i, "--".repeat(10));
       if (i) syncCount++;
     });
 

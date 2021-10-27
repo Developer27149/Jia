@@ -15,7 +15,8 @@ module.exports = {
           }`
         );
       });
-      return Promise.allSettled(promiseResArr)
+      const result = await Promise.allSettled(promiseResArr);
+      return result
         .filter((i) => i.status === "fulfilled")
         .map((i) => i.value.data)
         .flat();
