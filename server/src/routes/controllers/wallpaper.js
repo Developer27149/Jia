@@ -1,3 +1,6 @@
+const fs = require("fs");
+const Shortuuid = require("shortuuid");
+const fsPromise = fs.promises;
 const WallpaperModel = require("../../model/Wallpaper.js");
 const { getAllUnsplashWallpaper } = require("../../utils/unsplashApi.js");
 
@@ -79,7 +82,33 @@ const syncWallpaper = async (ctx) => {
   }
 };
 
+const uploadWallpaper = async (ctx) => {
+  // 获取文件,调用 unsplash 的接口上传文件,获取响应,返回结果
+  try {
+    console.log("ctx.request.file", ctx.request.file);
+    console.log("ctx.file", ctx.file);
+    console.log("ctx.request.body", ctx.request.body);
+    ctx.request.files.forEach((file) => {
+      const { name, size } = file;
+      console.log(name, size);
+    });
+  } catch (e) {
+    /* handle error */
+    console.log(e);
+  } finally {
+    ctx.api(
+      200,
+      {},
+      {
+        code: 1,
+        msg: "upload success",
+      }
+    );
+  }
+};
+
 module.exports = {
   getWallpaperByPage,
   syncWallpaper,
+  uploadWallpaper,
 };
