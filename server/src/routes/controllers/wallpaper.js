@@ -1,11 +1,10 @@
-const fs = require("fs");
-const Shortuuid = require("shortuuid");
-const fsPromise = fs.promises;
 const WallpaperModel = require("../../model/Wallpaper.js");
 const { getAllUnsplashWallpaper } = require("../../utils/unsplashApi.js");
+const UploadHashModel = require("../../model/UploadHash.js");
+const fs = require("fs");
 
 const getWallpaperByPage = async (ctx) => {
-  const { page } = ctx.request.body;
+  const { page = 1 } = ctx.params;
   const { limit = 10 } = ctx.query;
   const wallpapers = await WallpaperModel.find()
     .sort({ upload_at: 1 })
@@ -85,23 +84,32 @@ const syncWallpaper = async (ctx) => {
 const uploadWallpaper = async (ctx) => {
   // 获取文件,调用 unsplash 的接口上传文件,获取响应,返回结果
   try {
-    console.log("ctx.request.file", ctx.request.file);
-    console.log("ctx.file", ctx.file);
-    console.log("ctx.request.body", ctx.request.body);
-    ctx.request.files.forEach((file) => {
-      const { name, size } = file;
-      console.log(name, size);
-    });
+    let doc;
+    const { hash, path } = ctx.request.files.file;
+    const hashRecord = await UploadHashModel.findOne({ md5: hash });
+    if (hashRecord) {
+      // 删除刚刚收到的文件,否则创建新的哈希记录
+      fs.rmSync(path);
+    } else {
+      doc = await UploadHashModel.create({ md5: hash });
+    }
+    ctx.api(
+      200,
+      { doc },
+      {
+        code: 1,
+        msg: hashRecord ? "已存在" : "上传成功",
+      }
+    );
   } catch (e) {
     /* handle error */
     console.log(e);
-  } finally {
     ctx.api(
       200,
-      {},
+      { doc: null },
       {
-        code: 1,
-        msg: "upload success",
+        code: -1,
+        msg: "服务器异常,暂时无法上传图片",
       }
     );
   }
