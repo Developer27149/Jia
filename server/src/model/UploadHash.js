@@ -1,7 +1,11 @@
 const db = require("../utils/db.js");
 const mongoose = require("mongoose");
 const uploadHashScheme = mongoose.Schema({
-  md5: {
+  hash: {
+    type: String,
+    require: true,
+  },
+  path: {
     type: String,
     require: true,
   },

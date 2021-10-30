@@ -2,6 +2,8 @@ const WallpaperModel = require("../../model/Wallpaper.js");
 const { getAllUnsplashWallpaper } = require("../../utils/unsplashApi.js");
 const UploadHashModel = require("../../model/UploadHash.js");
 const fs = require("fs");
+const pathLib = require("path");
+const { generateZipFromFolder } = require("../../utils");
 
 const getWallpaperByPage = async (ctx) => {
   const { page = 1 } = ctx.params;
@@ -86,12 +88,13 @@ const uploadWallpaper = async (ctx) => {
   try {
     let doc;
     const { hash, path } = ctx.request.files.file;
-    const hashRecord = await UploadHashModel.findOne({ md5: hash });
+    const db_item = { hash, path };
+    const hashRecord = await UploadHashModel.findOne(db_item);
     if (hashRecord) {
       // 删除刚刚收到的文件,否则创建新的哈希记录
       fs.rmSync(path);
     } else {
-      doc = await UploadHashModel.create({ md5: hash });
+      doc = await UploadHashModel.create(db_item);
     }
     ctx.api(
       200,
@@ -115,8 +118,30 @@ const uploadWallpaper = async (ctx) => {
   }
 };
 
+const downloadWallpaper = async (ctx) => {
+  // 压缩上传的图片,删除上传的图片,发送压缩包
+  const oneItem = await UploadHashModel.findOne();
+  console.log(oneItem);
+  let zipAsBase64;
+  if (oneItem) {
+    const publicPath = pathLib.dirname(oneItem.path);
+    zipAsBase64 = await generateZipFromFolder(publicPath);
+  }
+  ctx.api(
+    200,
+    {
+      zipAsBase64,
+    },
+    {
+      code: oneItem ? 1 : -1,
+      msg: oneItem ? "获取成功" : "暂无上传的资源",
+    }
+  );
+};
+
 module.exports = {
   getWallpaperByPage,
   syncWallpaper,
   uploadWallpaper,
+  downloadWallpaper,
 };

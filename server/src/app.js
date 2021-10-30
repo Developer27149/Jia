@@ -11,12 +11,12 @@ app.use(
   koaBody({
     json: true,
     multipart: true,
-    formlimit: 1,
+    formlimit: 5 * 1024 * 1024, // default is 56 kb
     formidable: {
       uploadDir: path.join(__dirname, "..", "public") || process.env.SHARE_DIR,
-      formlimit: 5 * 1024 * 1024, // default is 2M
       keepExtensions: true,
       hash: "md5",
+      multiples: false,
     },
   })
 );
