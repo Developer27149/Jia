@@ -139,9 +139,35 @@ const downloadWallpaper = async (ctx) => {
   );
 };
 
+const wallpaperScore = async (ctx) => {
+  const { like, id } = ctx.request.body;
+  const result = await WallpaperModel.findOneAndUpdate(
+    { id },
+    {
+      $inc: {
+        likes: like ? 1 : -1,
+      },
+    },
+    {
+      returnOriginal: false,
+    }
+  );
+  ctx.api(
+    200,
+    {
+      result,
+    },
+    {
+      code: result ? 1 : -1,
+      msg: result ? "success" : "failed",
+    }
+  );
+};
+
 module.exports = {
   getWallpaperByPage,
   syncWallpaper,
   uploadWallpaper,
   downloadWallpaper,
+  wallpaperScore,
 };
