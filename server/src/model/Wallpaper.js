@@ -14,7 +14,6 @@ const wallpaperScheme = Mongoose.Schema({
     small: String,
   },
   upload_username: String,
-  tags: [String],
 });
 
 // 创建模型

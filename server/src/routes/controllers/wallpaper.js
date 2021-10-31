@@ -166,7 +166,7 @@ const wallpaperScore = async (ctx) => {
 
 const wallpaperSearchByTags = async (ctx) => {
   const { tags = [] } = ctx.request.body;
-  const result = await WallpaperModel.find({ tags });
+  const result = await WallpaperModel.find({ tags: { $in: tags } });
   console.log(result);
   //  const resultArr = [];
   // tags.forEach(async (tag) => {
