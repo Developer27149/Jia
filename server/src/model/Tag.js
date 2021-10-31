@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const db = require("../../utils/db.js");
+const db = require("../utils/db.js");
 
 const TagScheme = mongoose.Schema({
   name: {

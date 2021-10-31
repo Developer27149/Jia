@@ -4,6 +4,7 @@ const UploadHashModel = require("../../model/UploadHash.js");
 const fs = require("fs");
 const pathLib = require("path");
 const { generateZipFromFolder } = require("../../utils");
+const TagModel = require("../../model/Tag.js");
 
 const getWallpaperByPage = async (ctx) => {
   const { page = 1 } = ctx.params;
@@ -164,7 +165,7 @@ const wallpaperScore = async (ctx) => {
   );
 };
 
-const wallpaperSearchByTags = async (ctx) => {
+const wallpaperSearchByDescription = async (ctx) => {
   const { tags = [] } = ctx.request.body;
   const result = await WallpaperModel.find({ tags: { $in: tags } });
   console.log(result);
@@ -182,11 +183,78 @@ const wallpaperSearchByTags = async (ctx) => {
   );
 };
 
+const updateWallpaperTags = async (ctx) => {
+  const { id, tags } = ctx.request.body;
+  try {
+    // create new tags
+    tags.forEach(async (tag) => {
+      if (!(await TagModel.findOne({ name: tag }))) {
+        // create a new tag
+        await TagModel.create({
+          name: tag,
+          wallpaperIdArr: [id],
+        });
+      }
+    });
+    // delete other tag id
+    const matchTagArr = await TagModel.find({ wallpaperIdArr: { $in: [id] } });
+    matchTagArr.forEach(async (item) => {
+      if (!tags.includes(item.name)) {
+        await TagModel.findOneAndUpdate(
+          { name: item.name },
+          {
+            $set: {
+              wallpaperIdArr: item.wallpaperIdArr.filter((i) => i !== id),
+            },
+          }
+        );
+      }
+    });
+    ctx.api(
+      200,
+      {},
+      {
+        code: 1,
+        msg: "update success",
+      }
+    );
+  } catch (e) {
+    /* handle error */
+    console.log(e);
+    ctx.api(
+      200,
+      {},
+      {
+        code: -1,
+        msg: "update failed.",
+      }
+    );
+  }
+};
+
+const getWallpaperTags = async (ctx) => {
+  const { id } = ctx.params;
+  const result = await TagModel.find({ wallpaperIdArr: { $in: [id] } }, "name");
+  console.log(result, id);
+  ctx.api(
+    200,
+    {
+      result,
+    },
+    {
+      code: 1,
+      msg: "success",
+    }
+  );
+};
+
 module.exports = {
   getWallpaperByPage,
   syncWallpaper,
   uploadWallpaper,
   downloadWallpaper,
   wallpaperScore,
-  wallpaperSearchByTags,
+  wallpaperSearchByDescription,
+  updateWallpaperTags,
+  getWallpaperTags,
 };
