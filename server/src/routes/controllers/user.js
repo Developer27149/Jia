@@ -1,5 +1,6 @@
 const User = require("../../model/User.js");
 const { createToken } = require("../../utils");
+const crypto = require("crypto");
 
 module.exports = {
   register: async (ctx) => {
@@ -16,11 +17,19 @@ module.exports = {
           }
         );
       } else {
-        User.create({ username, password, intro, email });
+        const password_hash = crypto
+          .createHash("md5")
+          .update(password)
+          .digest("hex");
+        const result = User.create(
+          { username, password: password_hash, intro, email },
+          "username email intro likeWallpaperId uploadWallpaperId"
+        );
         ctx.api(
           200,
           {
-            token: createToken({ username }),
+            token: createToken(),
+            result,
           },
           {
             code: 1,
@@ -48,9 +57,10 @@ module.exports = {
         username ? { username, password } : { email, password },
         "username email intro likeWallpaperId uploadWallpaperId"
       );
+      console.log(username, password, email);
       ctx.api(
         200,
-        { result, token: createToken({ username }) },
+        { result, token: createToken() },
         {
           code: result ? 1 : -1,
           msg: result ? "success" : "failed",

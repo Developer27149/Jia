@@ -16,14 +16,15 @@ const addFolderFilesToZip = (folderPath, zipObj) => {
   });
 };
 
-const createToken = (data, expiresIn = "365 days") => {
-  return jwt.sign(
-    {
-      data,
-      expiresIn,
-    },
-    process.env.JWT
-  );
+const createToken = (payload = {}, expiresIn = "20s") => {
+  // sign(payload, secretOrPrivateKey, [option], callback)
+  return jwt.sign(payload, process.env.JWT, {
+    expiresIn,
+  });
+};
+
+const verityToken = (token) => {
+  return jwt.verify(token, process.env.JWT);
 };
 
 module.exports = {
@@ -33,4 +34,5 @@ module.exports = {
     return zip.generateAsync({ type: "base64" });
   },
   createToken,
+  verityToken,
 };

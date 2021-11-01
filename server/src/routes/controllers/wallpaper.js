@@ -3,7 +3,7 @@ const { getAllUnsplashWallpaper } = require("../../utils/unsplashApi.js");
 const UploadHashModel = require("../../model/UploadHash.js");
 const fs = require("fs");
 const pathLib = require("path");
-const { generateZipFromFolder } = require("../../utils");
+const { generateZipFromFolder, verityToken } = require("../../utils");
 const TagModel = require("../../model/Tag.js");
 
 const getWallpaperByPage = async (ctx) => {
@@ -236,6 +236,8 @@ const getWallpaperTags = async (ctx) => {
   const { id } = ctx.params;
   const result = await TagModel.find({ wallpaperIdArr: { $in: [id] } }, "name");
   console.log(result, id);
+  const token = ctx.header.authorization.replace(/^Bearer /, "");
+  console.log(verityToken(token));
   ctx.api(
     200,
     {
