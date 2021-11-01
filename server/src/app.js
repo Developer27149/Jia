@@ -3,6 +3,7 @@ const cors = require("@koa/cors");
 require("dotenv").config();
 const res_api = require("koa.res.api");
 const router = require("./routes");
+const userRouter = require("./routes/user.js");
 const koaBody = require("koa-body");
 const path = require("path");
 
@@ -23,6 +24,7 @@ app.use(
 app.use(cors());
 app.use(res_api());
 app.use(router.routes()).use(router.allowedMethods());
+app.use(userRouter.routes()).use(userRouter.allowedMethods());
 
 app.listen(process.env.PORT, () => {
   console.log("Lisent port：", process.env.PORT);

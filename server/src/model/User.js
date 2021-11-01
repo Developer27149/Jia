@@ -6,8 +6,14 @@ const UserScheme = mongoose.Schema({
   password: String,
   intro: String,
   email: String,
-  likeWallpaperId: [String],
-  uploadWallpaperId: [String],
+  likeWallpaperId: {
+    type: [String],
+    default: [],
+  },
+  uploadWallpaperId: {
+    type: [String],
+    default: [],
+  },
 });
 
 module.exports = db.model("user", UserScheme);
