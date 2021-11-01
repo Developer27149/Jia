@@ -1,4 +1,5 @@
 const User = require("../../model/User.js");
+const { createToken } = require("../../utils");
 
 module.exports = {
   register: async (ctx) => {
@@ -18,7 +19,9 @@ module.exports = {
         User.create({ username, password, intro, email });
         ctx.api(
           200,
-          {},
+          {
+            token: createToken({ username }),
+          },
           {
             code: 1,
             msg: "注册成功",
@@ -47,7 +50,7 @@ module.exports = {
       );
       ctx.api(
         200,
-        { result },
+        { result, token: createToken({ username }) },
         {
           code: result ? 1 : -1,
           msg: result ? "success" : "failed",

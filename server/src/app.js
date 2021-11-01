@@ -1,5 +1,6 @@
 const Koa = require("koa");
 const cors = require("@koa/cors");
+const jwt = require("koa-jwt");
 require("dotenv").config();
 const res_api = require("koa.res.api");
 const router = require("./routes");
@@ -22,6 +23,24 @@ app.use(
   })
 );
 app.use(cors());
+// Custom 401 handling if you don't want to expose koa-jwt errors to users
+app.use((ctx, next) => {
+  return next().catch((err) => {
+    if (401 == err.status) {
+      ctx.status = 401;
+      ctx.body = "请登录认证后再访问";
+    } else {
+      throw err;
+    }
+  });
+});
+app.use(
+  jwt({
+    secret: process.env.JWT,
+  }).unless({
+    path: ["/user/login", "/user/register"],
+  })
+);
 app.use(res_api());
 app.use(router.routes()).use(router.allowedMethods());
 app.use(userRouter.routes()).use(userRouter.allowedMethods());

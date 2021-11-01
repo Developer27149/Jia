@@ -1,5 +1,6 @@
 const fs = require("fs");
 const Zip = require("jszip");
+const jwt = require("jsonwebtoken");
 
 const addFolderFilesToZip = (folderPath, zipObj) => {
   const folderContent = fs.readdirSync(folderPath, {
@@ -15,10 +16,21 @@ const addFolderFilesToZip = (folderPath, zipObj) => {
   });
 };
 
+const createToken = (data, expiresIn = "365 days") => {
+  return jwt.sign(
+    {
+      data,
+      expiresIn,
+    },
+    process.env.JWT
+  );
+};
+
 module.exports = {
   generateZipFromFolder: async (folderPath) => {
     const zip = new Zip();
     addFolderFilesToZip(folderPath, zip);
     return zip.generateAsync({ type: "base64" });
   },
+  createToken,
 };
