@@ -28,7 +28,7 @@ module.exports = {
         ctx.api(
           200,
           {
-            token: createToken(),
+            token: createToken({ id: result?.id }),
             result,
           },
           {
@@ -57,10 +57,9 @@ module.exports = {
         username ? { username, password } : { email, password },
         "username email intro likeWallpaperId uploadWallpaperId"
       );
-      console.log(username, password, email);
       ctx.api(
         200,
-        { result, token: createToken() },
+        { result, token: createToken({ id: result?.id }) },
         {
           code: result ? 1 : -1,
           msg: result ? "success" : "failed",

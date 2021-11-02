@@ -16,7 +16,7 @@ const addFolderFilesToZip = (folderPath, zipObj) => {
   });
 };
 
-const createToken = (payload = {}, expiresIn = "20s") => {
+const createToken = (payload = {}, expiresIn = "365 days") => {
   // sign(payload, secretOrPrivateKey, [option], callback)
   return jwt.sign(payload, process.env.JWT, {
     expiresIn,

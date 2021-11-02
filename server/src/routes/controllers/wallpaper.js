@@ -165,17 +165,30 @@ const wallpaperScore = async (ctx) => {
   );
 };
 
-const wallpaperSearchByDescription = async (ctx) => {
-  const { tags = [] } = ctx.request.body;
-  const result = await WallpaperModel.find({ tags: { $in: tags } });
-  console.log(result);
+const wallpaperSearchByKeywords = async (ctx) => {
+  const { keywordArr = [] } = ctx.request.body;
+  let resultArr = [];
+  keywordArr.forEach(async (keyStr) => {
+    const reg = new RegExp(`/${keyStr}/`);
+    const resultWithDescription = await WallpaperModel.find({
+      description: reg,
+    });
+    const tagResult = await TagModel.find({ name: reg }, "wallpaperIdArr");
+    const wallpaperByTag = await WallpaperModel.find({
+      id: { $in: tagResult.map((i) => i.wallpaperIdArr).flat() },
+    });
+    resultArr = resultWithDescription.concat(
+      wallpaperByTag.filter((i) => !resultWithDescription.includes(i))
+    );
+  });
+  console.log(resultArr);
   //  const resultArr = [];
   // tags.forEach(async (tag) => {
   // const items = await WallpaperModel.find({})
   //});
   ctx.api(
     200,
-    { result },
+    { resultArr },
     {
       code: 1,
       msg: "test..",
@@ -256,7 +269,7 @@ module.exports = {
   uploadWallpaper,
   downloadWallpaper,
   wallpaperScore,
-  wallpaperSearchByDescription,
+  wallpaperSearchByKeywords,
   updateWallpaperTags,
   getWallpaperTags,
 };
