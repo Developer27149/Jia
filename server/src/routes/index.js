@@ -5,17 +5,19 @@ const {
   uploadWallpaper,
   downloadWallpaper,
   wallpaperScore,
-  wallpaperSearchByDescription,
+  wallpaperSearchByKeywords,
   updateWallpaperTags,
   getWallpaperTags,
+  getWallpaperTag,
 } = require("./controllers/wallpaper.js");
 
 const router = new Router();
 router.get("/wallpaper/page/:page", getWallpaperByPage);
 router.get("/wallpaper/sync", syncWallpaper);
 router.post("/wallpaper/score", wallpaperScore);
-router.post("/wallpaper/search", wallpaperSearchByDescription);
-router.get("/wallpaper/tags/:id", getWallpaperTags);
+router.post("/wallpaper/search", wallpaperSearchByKeywords);
+router.get("/wallpaper/tags/:id", getWallpaperTag);
+router.get("/wallpaper/tags", getWallpaperTags);
 router.put("/wallpaper/tags", updateWallpaperTags);
 // upload route
 router.post("/wallpaper/upload", uploadWallpaper);
