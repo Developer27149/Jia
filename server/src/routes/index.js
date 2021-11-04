@@ -9,6 +9,7 @@ const {
   updateWallpaperTags,
   getWallpaperTags,
   getWallpaperTag,
+  randomWallpaper,
 } = require("./controllers/wallpaper.js");
 
 const router = new Router();
@@ -19,6 +20,7 @@ router.post("/wallpaper/search", wallpaperSearchByKeywords);
 router.get("/wallpaper/tags/:id", getWallpaperTag);
 router.get("/wallpaper/tags", getWallpaperTags);
 router.put("/wallpaper/tags", updateWallpaperTags);
+router.post("/wallpaper/random", randomWallpaper);
 // upload route
 router.post("/wallpaper/upload", uploadWallpaper);
 router.get("/wallpaper/zip", downloadWallpaper);

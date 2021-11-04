@@ -287,6 +287,25 @@ const getWallpaperTags = async (ctx) => {
   }
 };
 
+const randomWallpaper = async (ctx) => {
+  try {
+    const { historyId = [] } = ctx.request.body;
+    const result = await WallpaperModel.findOne({ id: { $nin: historyId } });
+    ctx.api(
+      200,
+      { result },
+      {
+        code: 1,
+        msg: "success",
+      }
+    );
+  } catch (e) {
+    /* handle error */
+    console.log(e);
+    ctx.api(200, {}, { code: -1, msg: "failed" });
+  }
+};
+
 module.exports = {
   getWallpaperByPage,
   syncWallpaper,
@@ -297,4 +316,5 @@ module.exports = {
   updateWallpaperTags,
   getWallpaperTags,
   getWallpaperTag,
+  randomWallpaper,
 };
