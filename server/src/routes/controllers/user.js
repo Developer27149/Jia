@@ -5,7 +5,7 @@ const crypto = require("crypto");
 module.exports = {
   register: async (ctx) => {
     try {
-      const { username, password, intro, email } = ctx.request.body;
+      const { username, password, email } = ctx.request.body;
       const isExist = await User.exists({ username });
       if (isExist) {
         ctx.api(
@@ -21,10 +21,22 @@ module.exports = {
           .createHash("md5")
           .update(password)
           .digest("hex");
-        const result = User.create(
-          { username, password: password_hash, intro, email },
-          "username email intro likeWallpaperId uploadWallpaperId"
-        );
+        let result = await User.create({
+          username,
+          password: password_hash,
+          email,
+        });
+        if (result) {
+          const { username, email, intro, likeWallpaperId, uploadWallpaperId } =
+            result;
+          result = {
+            username,
+            email,
+            intro,
+            likeWallpaperId,
+            uploadWallpaperId,
+          };
+        }
         ctx.api(
           200,
           {

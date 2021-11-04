@@ -4,7 +4,10 @@ const mongoose = require("mongoose");
 const UserScheme = mongoose.Schema({
   username: String,
   password: String,
-  intro: String,
+  intro: {
+    type: String,
+    default: "很酷😎",
+  },
   email: String,
   likeWallpaperId: {
     type: [String],
