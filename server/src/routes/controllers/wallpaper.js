@@ -167,24 +167,16 @@ const wallpaperScore = async (ctx) => {
 
 const wallpaperSearchByKeywords = async (ctx) => {
   const { keywordArr = [] } = ctx.request.body;
-  console.log(keywordArr);
   const tasks = keywordArr.map(async (keyStr) => {
     const reg = new RegExp(`${keyStr}`);
-    console.log("line 174:", reg);
     const resultWithDescription = await WallpaperModel.find({
       description: reg,
     });
-    console.log("line 176:", resultWithDescription);
     const tagResult = await TagModel.find({ name: reg }, "wallpaperIdArr");
-    console.log("line 178:", tagResult);
-    const allId = tagResult.map((i) => i.wallpaperIdArr).flat();
-    console.log("all id is:", allId);
     const wallpaperByTag = await WallpaperModel.find({
       id: { $in: tagResult.map((i) => i.wallpaperIdArr).flat() },
     });
-    console.log(wallpaperByTag, "line 184");
     wallpaperByTag.forEach((i) => {
-      console.log(i.id);
       if (resultWithDescription.every((j) => j.id !== i.id)) {
         resultWithDescription.push(i);
       }
@@ -198,7 +190,7 @@ const wallpaperSearchByKeywords = async (ctx) => {
     { result: resultArr.flat() },
     {
       code: 1,
-      msg: "test..",
+      msg: "success",
     }
   );
 };
