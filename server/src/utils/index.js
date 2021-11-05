@@ -1,6 +1,7 @@
 const fs = require("fs");
 const Zip = require("jszip");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 const addFolderFilesToZip = (folderPath, zipObj) => {
   const folderContent = fs.readdirSync(folderPath, {
@@ -27,6 +28,10 @@ const verityToken = (token) => {
   return jwt.verify(token, process.env.JWT);
 };
 
+const createHashPassword = (password) => {
+  return crypto.createHash("md5").update(password).digest("hex");
+};
+
 module.exports = {
   generateZipFromFolder: async (folderPath) => {
     const zip = new Zip();
@@ -35,4 +40,5 @@ module.exports = {
   },
   createToken,
   verityToken,
+  createHashPassword,
 };

@@ -1,6 +1,5 @@
 const User = require("../../model/User.js");
-const { createToken } = require("../../utils");
-const crypto = require("crypto");
+const { createToken, createHashPassword } = require("../../utils");
 
 module.exports = {
   register: async (ctx) => {
@@ -17,13 +16,9 @@ module.exports = {
           }
         );
       } else {
-        const password_hash = crypto
-          .createHash("md5")
-          .update(password)
-          .digest("hex");
         let result = await User.create({
           username,
-          password: password_hash,
+          password: createHashPassword(password),
           email,
         });
         if (result) {
@@ -61,14 +56,18 @@ module.exports = {
   },
   login: async (ctx) => {
     try {
-      const { username, password, email } = ctx.request.body;
+      const { username, password } = ctx.request.body;
+      // username maybe is email
       const result = await User.findOne(
-        username ? { username, password } : { email, password },
+        {
+          password: createHashPassword(password),
+          $or: [{ username }, { email: username }],
+        },
         "username email intro likeWallpaperId uploadWallpaperId"
       );
       ctx.api(
         200,
-        { result, token: createToken({ id: result?.id }) },
+        { result, token: result ? createToken({ id: result?.id }) : "" },
         {
           code: result ? 1 : -1,
           msg: result ? "success" : "failed",
