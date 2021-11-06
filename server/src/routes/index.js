@@ -11,6 +11,7 @@ const {
   getWallpaperTag,
   randomWallpaper,
 } = require("./controllers/wallpaper.js");
+const { musicRandom, syncMusicFromNet163 } = require("./controllers/music.js");
 
 const router = new Router();
 router.get("/wallpaper/page/:page", getWallpaperByPage);
@@ -25,4 +26,7 @@ router.post("/wallpaper/random", randomWallpaper);
 router.post("/wallpaper/upload", uploadWallpaper);
 router.get("/wallpaper/zip", downloadWallpaper);
 
+// music router
+router.post("/music/random", musicRandom);
+router.get("/music/sync", syncMusicFromNet163);
 module.exports = router;
