@@ -10,6 +10,10 @@ const musicScheme = mongoose.Schema({
     require: true,
     type: String,
   },
+  author: {
+    require: true,
+    type: String,
+  },
   downloadUrl: {
     require: true,
     type: String,
