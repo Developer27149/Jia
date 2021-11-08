@@ -1,5 +1,5 @@
 const musicModel = require("../../model/Music.js");
-const { getMySongsForAir } = require("../../utils/net163.js");
+const { getMySongsForAir, getSongUrl } = require("../../utils/net163.js");
 
 module.exports = {
   musicRandom: async (ctx) => {
@@ -7,14 +7,15 @@ module.exports = {
       let res = await musicModel.find();
       if (res.length === 0)
         throw Error("Database is empty, I can not find a song");
-      ctx.api(
-        200,
-        { song: res[~~Math.random(res.length)] },
-        {
-          code: res ? 1 : -1,
-          msg: res ? "success" : "failed",
-        }
-      );
+      let target = res[~~(Math.random() * res.length)];
+      if (new Date().getTime() >= target.expi) {
+        console.log(new Date().getTime(), target.expi, "get new url");
+        target.downloadUrl = await getSongUrl(target.songId);
+      }
+      ctx.api(200, target, {
+        code: res ? 1 : -1,
+        msg: res ? "success" : "failed",
+      });
     } catch (e) {
       /* handle error */
       console.log(e);
@@ -45,5 +46,17 @@ module.exports = {
         }
       );
     }
+  },
+  getTargetSong: async (ctx) => {
+    const id = ctx.params.id;
+    const url = await getSongUrl(id);
+    ctx.api(
+      200,
+      { url },
+      {
+        code: 1,
+        msg: "success",
+      }
+    );
   },
 };

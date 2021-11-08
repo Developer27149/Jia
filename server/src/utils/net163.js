@@ -58,6 +58,8 @@ const getMySongsForAir = async () => {
         const urlData = urlRes.body.data.find((e) => e.id === i.songId);
         if (urlData) {
           i.downloadUrl = urlData?.url;
+          const msec = new Date().getTime();
+          i.expi = msec + 500 * 1000; // expiresIn time number
         }
         return i;
       })
@@ -94,7 +96,17 @@ const getMyNet163AccountData = async (ctx) => {
   );
 };
 
+const getSongUrl = async (id) => {
+  const cookie = await getCookie();
+  const urlData = await song_url({
+    cookie,
+    id,
+  });
+  return urlData.body.data[0].url;
+};
+
 module.exports = {
   getMySongsForAir,
   getMyNet163AccountData,
+  getSongUrl,
 };

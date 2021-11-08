@@ -18,6 +18,10 @@ const musicScheme = mongoose.Schema({
     require: true,
     type: String,
   },
+  expi: {
+    require: true,
+    type: Number,
+  },
 });
 
 module.exports = db.model("music", musicScheme);
