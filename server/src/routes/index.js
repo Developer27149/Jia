@@ -27,6 +27,6 @@ router.post("/wallpaper/upload", uploadWallpaper);
 router.get("/wallpaper/zip", downloadWallpaper);
 
 // music router
-router.post("/music/random", musicRandom);
+router.get("/music/random", musicRandom);
 router.get("/music/sync", syncMusicFromNet163);
 module.exports = router;

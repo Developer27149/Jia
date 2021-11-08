@@ -3,11 +3,14 @@ const {
   login_status,
   playlist_detail,
   song_url,
+  user_account,
+  user_playlist,
 } = require("NeteaseCloudMusicApi");
-const Net163Model = require("../model/Net163.js");
+const net163Model = require("../model/Net163.js");
+const musicModel = require("../model/Music.js");
 
 const getCookie = async () => {
-  let cookieItem = await Net163Model.findOne();
+  let cookieItem = await net163Model.findOne();
   const isValid = await login_status({
     cookie: cookieItem?.cookie,
   });
@@ -19,13 +22,13 @@ const getCookie = async () => {
     return cookieItem.cookie;
   } else {
     // delete old cookie and create a new item
-    await Net163Model.deleteOne({ cookie: cookieItem.cookie });
+    await net163Model.deleteOne({ cookie: cookieItem.cookie });
     const res = await login_cellphone({
       phone: process.env.PHONE,
       password: process.env.NET163_PW,
     });
     const cookie = res.body.cookie;
-    await Net163Model.create({
+    await net163Model.create({
       cookie,
     });
     return cookie;
@@ -37,7 +40,7 @@ const getMySongsForAir = async () => {
     const cookie = await getCookie();
     const res = await playlist_detail({
       cookie,
-      id: "6921481649",
+      id: "6680040725",
       n: "1000",
     });
     const playList = res.body.playlist.tracks;
@@ -50,19 +53,20 @@ const getMySongsForAir = async () => {
     });
     const ids = recordItem.map((i) => i.songId).join();
     const urlRes = await song_url({ cookie, id: ids });
-    const dbRes = await Net163Model.insertMany(
-      recordItem
-        .map((i) => {
-          const urlData = urlRes.body.data.find((e) => e.id === i.songId);
-          if (urlData) {
-            i.downloadUrl = urlData?.url;
-          }
-          return i;
-        })
-        .filter((i) => !!i?.downloadUrl)
-    );
-    console.log(dbRes);
-    if (dbRes) return true;
+    recordItem
+      .map((i) => {
+        const urlData = urlRes.body.data.find((e) => e.id === i.songId);
+        if (urlData) {
+          i.downloadUrl = urlData?.url;
+        }
+        return i;
+      })
+      .filter((i) => !!i?.downloadUrl)
+      .forEach(async (item) => {
+        if (!(await musicModel.exists({ songId: item.songId }))) {
+          musicModel.create(item);
+        }
+      });
     return true;
   } catch (e) {
     /* handle error */
@@ -71,6 +75,26 @@ const getMySongsForAir = async () => {
   }
 };
 
+const getMyNet163AccountData = async (ctx) => {
+  const cookie = await getCookie();
+  const data = user_account({ cookie });
+  const mySongCollection = user_playlist({
+    cookie,
+    uid: "308766059",
+    includeVide: false,
+  });
+
+  ctx.api(
+    200,
+    { account: await data, collection: await mySongCollection },
+    {
+      code: 1,
+      msg: "success",
+    }
+  );
+};
+
 module.exports = {
   getMySongsForAir,
+  getMyNet163AccountData,
 };

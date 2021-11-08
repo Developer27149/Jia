@@ -38,7 +38,7 @@ app.use(
   jwt({
     secret: process.env.JWT,
   }).unless({
-    path: ["/user/login", "/user/register"],
+    path: ["/user/login", "/user/register", "/music/random"],
   })
 );
 app.use(res_api());
