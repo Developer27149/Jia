@@ -8,9 +8,16 @@ module.exports = {
       if (res.length === 0)
         throw Error("Database is empty, I can not find a song");
       let target = res[~~(Math.random() * res.length)];
-      if (new Date().getTime() >= target.expi) {
-        console.log(new Date().getTime(), target.expi, "get new url");
+      const curTime = new Date().getTime();
+      if (curTime >= target.expi) {
         target.downloadUrl = await getSongUrl(target.songId);
+        musicModel.findByIdAndUpdate(
+          { _id: target._id },
+          { downloadUrl: target.downloadUrl, expi: curTime + 1000 * 60 * 10 },
+          {
+            new: true,
+          }
+        );
       }
       ctx.api(200, target, {
         code: res ? 1 : -1,
