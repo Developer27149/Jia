@@ -22,11 +22,14 @@ module.exports = {
           email,
         });
         if (result) {
-          const { username, email, intro } = result;
+          const { username, email, intro, likeWallpaperId, uploadWallpaperId } =
+            result;
           result = {
             username,
             email,
             intro,
+            likeWallpaperId,
+            uploadWallpaperId,
           };
         }
         ctx.api(
