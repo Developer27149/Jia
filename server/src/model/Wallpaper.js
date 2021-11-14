@@ -13,7 +13,10 @@ const wallpaperScheme = Mongoose.Schema({
     full: String,
     small: String,
   },
-  upload_username: String,
+  upload_user_avatar: {
+    type: String,
+    default: "https://avatars.githubusercontent.com/youyiqin",
+  },
 });
 
 // 创建模型

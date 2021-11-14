@@ -7,17 +7,28 @@ const { generateZipFromFolder, verityToken } = require("../../utils");
 const TagModel = require("../../model/Tag.js");
 
 const getWallpaperByPage = async (ctx) => {
-  const { page = 1 } = ctx.params;
-  const { limit = 10 } = ctx.query;
+  const { page = 1, limit = 10, sortType = "random" } = ctx.request.body;
+  let sortObj;
+  if (sortType === "newest") sortObj = { upload_at: 1 };
+  if (sortType === "like") sortObj = { likes: 1 };
+  if (sortType === "old") sortObj = { upload_at: -1 };
+  if (sortType === "random") sortObj = null;
   const wallpapers = await WallpaperModel.find()
-    .sort({ upload_at: 1 })
+    .sort(sortObj)
     .skip((page - 1) * limit)
     .limit(limit)
     .exec();
-  ctx.api(200, wallpapers, {
-    code: 0,
-    msg: "everything is ok",
-  });
+  ctx.api(
+    200,
+    {
+      wallpapers,
+      nextPage: wallpapers.length < limit ? null : page + 1,
+    },
+    {
+      code: 0,
+      msg: "everything is ok",
+    }
+  );
 };
 
 const syncWallpaper = async (ctx) => {
@@ -27,7 +38,6 @@ const syncWallpaper = async (ctx) => {
       ({
         id,
         updated_at,
-        likes,
         urls: { raw, full, small },
         description,
         width,
@@ -35,7 +45,7 @@ const syncWallpaper = async (ctx) => {
       }) => {
         return {
           upload_at: updated_at,
-          likes,
+          likes: 0,
           id,
           urls: { raw, full, small },
           description,

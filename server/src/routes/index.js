@@ -18,7 +18,7 @@ const {
 } = require("./controllers/music.js");
 
 const router = new Router();
-router.get("/wallpaper/page/:page", getWallpaperByPage);
+router.post("/wallpaper/page", getWallpaperByPage);
 router.get("/wallpaper/sync", syncWallpaper);
 router.post("/wallpaper/score", wallpaperScore);
 router.post("/wallpaper/search", wallpaperSearchByKeywords);
