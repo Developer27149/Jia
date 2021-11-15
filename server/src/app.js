@@ -23,12 +23,12 @@ app.use(
   })
 );
 app.use(cors());
+app.use(res_api());
 // Custom 401 handling if you don't want to expose koa-jwt errors to users
 app.use((ctx, next) => {
   return next().catch((err) => {
     if (401 == err.status) {
-      ctx.status = 401;
-      ctx.body = "请登录认证后再访问";
+      ctx.api(200, {}, { code: 401, msg: "请登录认证后再访问" });
     } else {
       throw err;
     }
@@ -46,7 +46,6 @@ app.use(
     ],
   })
 );
-app.use(res_api());
 app.use(router.routes()).use(router.allowedMethods());
 app.use(userRouter.routes()).use(userRouter.allowedMethods());
 

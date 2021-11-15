@@ -158,16 +158,11 @@ const wallpaperScore = async (ctx) => {
       $inc: {
         likes: like ? 1 : -1,
       },
-    },
-    {
-      returnOriginal: false,
     }
   );
   ctx.api(
     200,
-    {
-      result,
-    },
+    {},
     {
       code: result ? 1 : -1,
       msg: result ? "success" : "failed",
